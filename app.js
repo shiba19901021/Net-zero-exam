@@ -672,7 +672,15 @@ if (exportBtn) {
         syncArea.style.display = 'block';
         confirmImportBtn.style.display = 'none';
         
-        const h = JSON.parse(localStorage.getItem('examHistory') || '[]').slice(0, 5);
+        let h = JSON.parse(localStorage.getItem('examHistory') || '[]').slice(0, 5);
+        // Strip out legacy bloated 'questions' array from old history formats to prevent huge sync codes
+        h = h.map(r => {
+            if (r.questions) {
+                const { questions, ...rest } = r;
+                return rest;
+            }
+            return r;
+        });
         const w = JSON.parse(localStorage.getItem('wrongQuestions') || '{}');
         const c = JSON.parse(localStorage.getItem('customAnswers') || '{}');
         const s = JSON.parse(localStorage.getItem('questionStats') || '{}');
@@ -702,7 +710,10 @@ if (exportBtn) {
     });
 
     confirmImportBtn.addEventListener('click', () => {
-        const code = syncArea.value.trim();
+        let code = syncArea.value;
+        // Remove all whitespaces, newlines, and trailing spaces that might be added by messaging apps
+        code = code.replace(/\s+/g, '');
+        
         if (!code) {
             syncStatus.textContent = '❌ 請先貼上代碼！';
             syncStatus.style.color = 'var(--error)';
