@@ -83,6 +83,11 @@
                     <span class="material-symbols-outlined">history</span>
                     測驗歷史紀錄
                 </button>
+                <button id="stats-btn" class="secondary-btn"
+                    style="margin-top: 1rem; width: 100%; padding: 12px; border-radius: 12px; background: var(--surface-low); color: var(--on-surface); border: 1px solid var(--outline-variant); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600;">
+                    <span class="material-symbols-outlined">bar_chart</span>
+                    學習進度統計
+                </button>
             </div>
 
             <div class="card" style="margin-bottom: 1.5rem;">
@@ -216,8 +221,41 @@
                 <!-- History items will be inserted here -->
             </div>
         </div>
+
+        <!-- ===== STATS VIEW ===== -->
+        <div id="stats-view" class="view-hidden">
+            <div class="result-header">
+                <h1>學習進度統計</h1>
+                <p class="subtitle">檢視你的刷題進度與狀態</p>
+            </div>
+
+            <div class="card" style="margin-bottom: 1rem;">
+                <canvas id="progressChart"></canvas>
+            </div>
+
+            <div class="stats-row" style="margin-bottom: 1rem;">
+                <div class="stat-card">
+                    <span class="stat-number" id="stats-done">0</span>
+                    <span class="stat-label">總共做過</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="stats-undone" style="color:var(--on-surface-variant);">0</span>
+                    <span class="stat-label">尚未做過</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="stats-multiple" style="color:var(--primary);">0</span>
+                    <span class="stat-label">做過多次</span>
+                </div>
+            </div>
+
+            <button id="stats-back-btn" class="primary-btn" style="width: 100%;">
+                <span class="material-symbols-outlined">arrow_back</span>
+                返回首頁
+            </button>
+        </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="questions.js"></script>
     <script src="app.js"></script>
 </body>

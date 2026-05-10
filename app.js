@@ -43,6 +43,10 @@ const historyView = $('history-view');
 const ratioSlider = $('ratio-slider');
 const startBtn = $('start-btn');
 const historyBtn = $('history-btn');
+const statsBtn = $('stats-btn');
+const statsView = $('stats-view');
+const statsBackBtn = $('stats-back-btn');
+let progressChartInstance = null;
 
 // ===== Initialize Stats =====
 function initStats() {
@@ -125,7 +129,7 @@ $('clear-wrong-btn')?.addEventListener('click', () => {
 });
 
 function switchView(target) {
-  [dashboardView, examView, resultView, historyView].forEach(v => {
+  [dashboardView, examView, resultView, historyView, statsView].forEach(v => {
     if (v) {
       v.classList.remove('view-active');
       v.classList.add('view-hidden');
@@ -771,6 +775,83 @@ if (exportBtn) {
         } catch (e) {
             syncStatus.style.color = 'var(--error)';
             syncStatus.textContent = '❌ 錯誤：這組代碼似乎有問題，請確認是否有複製完整！';
+        }
+    });
+}
+
+// ===== Stats System =====
+if (statsBtn) {
+    statsBtn.addEventListener('click', () => {
+        renderStats();
+        switchView(statsView);
+    });
+}
+
+if (statsBackBtn) {
+    statsBackBtn.addEventListener('click', () => switchView(dashboardView));
+}
+
+function renderStats() {
+    const allQuestions = [...pastQuestionsS1, ...pastQuestionsS2, ...aiQuestionsS1, ...aiQuestionsS2];
+    const totalCount = allQuestions.length;
+    
+    let questionStats = JSON.parse(localStorage.getItem('questionStats') || '{}');
+    let wrongStats = JSON.parse(localStorage.getItem('wrongStats') || '{}');
+    let wrongQ = JSON.parse(localStorage.getItem('wrongQuestions') || '{}');
+    
+    let doneCount = 0;
+    let multipleCount = 0;
+    
+    allQuestions.forEach(q => {
+        let timesDone = (questionStats[q.id] || 0) + (wrongStats[q.id] || 0);
+        // 如果在錯題庫且次數是0，也算做過一次
+        if (timesDone === 0 && wrongQ.hasOwnProperty(q.id)) {
+            timesDone = 1; 
+        }
+        
+        if (timesDone > 0) doneCount++;
+        if (timesDone > 1) multipleCount++;
+    });
+    
+    const undoneCount = totalCount - doneCount;
+    
+    $('stats-done').textContent = doneCount;
+    $('stats-undone').textContent = undoneCount;
+    $('stats-multiple').textContent = multipleCount;
+    
+    const ctx = document.getElementById('progressChart').getContext('2d');
+    
+    if (progressChartInstance) {
+        progressChartInstance.destroy();
+    }
+    
+    progressChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['已做過 (僅 1 次)', '做過多次', '尚未做過'],
+            datasets: [{
+                data: [doneCount - multipleCount, multipleCount, undoneCount],
+                backgroundColor: [
+                    '#4caf50', 
+                    '#2196f3', 
+                    '#e0e0e0'  
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            family: "'Manrope', sans-serif"
+                        }
+                    }
+                }
+            }
         }
     });
 }
