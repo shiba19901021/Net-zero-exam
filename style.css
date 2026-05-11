@@ -138,57 +138,52 @@ body {
   box-shadow: 0 3px var(--secondary-container);
 }
 
-/* Detailed Stats Card */
-.detailed-stats-card {
-    background: var(--surface-low);
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 24px;
-    border: 1px solid var(--outline-variant);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-.detailed-stat-item {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-.stat-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.stat-title {
-    font-weight: 700;
-    font-size: 0.95rem;
-    color: var(--on-surface);
-}
-.stat-progress-text {
-    font-family: 'Work Sans', sans-serif;
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--primary);
-}
-.progress-bar-mini {
-    height: 8px;
-    background: var(--surface-variant);
-    border-radius: 4px;
-    overflow: hidden;
-}
-.progress-bar-mini div {
-    height: 100%;
-    background: var(--primary);
-    border-radius: 4px;
-    transition: width 0.4s ease;
-}
-.stat-detail {
-    font-size: 0.8rem;
+.section-label {
+    font-size: 0.85rem;
+    font-weight: 800;
     color: var(--on-surface-variant);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
 }
-.stat-detail span {
-    color: var(--error);
+.stat-row-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.split-item {
+    background: var(--surface);
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--outline-variant);
+    transition: all 0.2s ease;
+}
+.clickable {
+    cursor: pointer;
+}
+.clickable:hover {
+    background: var(--surface-high);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.clickable:active {
+    transform: translateY(0);
+}
+.split-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--on-surface-variant);
+    display: block;
+    margin-bottom: 4px;
+}
+.split-value {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 0.85rem;
     font-weight: 700;
+    color: var(--primary);
+    display: block;
+    margin-bottom: 6px;
 }
 
 .slider-wrapper { padding: 0 4px; }

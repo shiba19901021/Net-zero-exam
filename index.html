@@ -6,12 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>淨零碳規劃管理師 - 題庫練習系統</title>
     <meta name="description" content="淨零碳規劃管理師初級能力鑑定考試題庫練習系統">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700&family=Literata:wght@400;500&family=Work+Sans:wght@500;600&display=swap"
-        rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700&family=Literata:wght@400;500&family=Work+Sans:wght@500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=3">
 </head>
 
 <body>
@@ -24,113 +21,87 @@
                 <p class="exam-date">考試日期：2026 / 05 / 16</p>
             </div>
 
-            <div class="card">
-                <h2><span class="material-symbols-outlined">tune</span> 考試設定</h2>
-
-                <div class="setting-group">
-                    <label>選擇考科</label>
-                    <div class="radio-group" id="subject-selection">
-                        <label class="radio-option active" data-value="subject1">
-                            <span class="radio-dot"></span>考科 1：基礎概論
-                        </label>
-                        <label class="radio-option" data-value="subject2">
-                            <span class="radio-dot"></span>考科 2：盤查規範
-                        </label>
-                        <label class="radio-option" data-value="high_freq">
-                            <span class="radio-dot"></span>🔥 高頻專區 (iPAS 核心)
-                        </label>
-                        <label class="radio-option" data-value="all">
-                            <span class="radio-dot"></span>📚 綜合模擬 (全科)
-                        </label>
-                    </div>
+            <!-- 每次題數選擇 -->
+            <div class="card" style="margin-bottom: 1rem;">
+                <div class="slider-header">
+                    <span class="slider-label" style="font-weight:700;">每次測驗題數</span>
+                    <span class="slider-value" id="count-value" style="font-size:1.4rem; font-weight:800; color:var(--primary);">50</span>
                 </div>
-
-                <div class="setting-group">
-                    <label>測驗模式</label>
-                    <div class="radio-group" id="feedback-mode-selection">
-                        <label class="radio-option" data-value="end">
-                            <span class="radio-dot"></span>全部做完交卷再看解析
-                        </label>
-                        <label class="radio-option active" data-value="instant">
-                            <span class="radio-dot"></span>答題完馬上揭曉答案與解析
-                        </label>
-                    </div>
+                <div class="slider-wrapper">
+                    <input type="range" id="count-slider" min="10" max="50" step="5" value="50">
                 </div>
+            </div>
 
-                <div class="setting-group">
-                    <label>題目組成 <span class="hint">（共 50 題）</span></label>
-                    <div class="slider-wrapper">
-                        <div class="slider-labels">
-                            <span>📚 歷屆考古題 <strong id="ratio-past-val">30</strong></span>
-                            <span>🤖 AI 改編 / 時事 <strong id="ratio-ai-val">20</strong></span>
-                        </div>
-                        <input type="range" id="ratio-slider" min="0" max="50" value="30">
-                    </div>
-                </div>
-
-                <div style="display:flex; gap:12px; margin-top:1rem;">
-                    <button id="start-btn" class="primary-btn" style="flex:1;">
-                        <span class="material-symbols-outlined">play_arrow</span>
-                        開始測驗
-                    </button>
-                    <div style="flex:1; display:flex; flex-direction:column; gap:8px;">
-                        <button id="wrong-practice-btn" class="primary-btn" style="width:100%; background:var(--error-container); color:var(--error);">
-                            <span class="material-symbols-outlined">menu_book</span>
-                            錯題專區練習
-                        </button>
-                        <button id="clear-wrong-btn" class="filter-btn" style="width:100%; color:var(--error); border-color:var(--error);">
-                            <span class="material-symbols-outlined" style="font-size:1rem;">delete</span>
-                            清除所有錯題
-                        </button>
-                    </div>
-                </div>
-                <button id="history-btn" class="secondary-btn"
-                    style="margin-top: 1rem; width: 100%; padding: 12px; border-radius: 12px; background: var(--surface-low); color: var(--on-surface); border: 1px solid var(--outline-variant); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600;">
+            <!-- 錯題＆歷史按鈕 -->
+            <div style="display:flex; gap:10px; margin-bottom: 1rem;">
+                <button id="wrong-practice-btn" class="primary-btn" style="flex:1; background:var(--error-container); color:var(--error);">
+                    <span class="material-symbols-outlined">menu_book</span>
+                    錯題練習
+                </button>
+                <button id="history-btn" class="primary-btn" style="flex:1; background:var(--surface-low); color:var(--on-surface); border:1px solid var(--outline-variant);">
                     <span class="material-symbols-outlined">history</span>
-                    測驗歷史紀錄
+                    測驗歷史
                 </button>
             </div>
 
+            <!-- 跨裝置進度同步 -->
             <div class="card" style="margin-bottom: 1.5rem;">
-                <h2><span class="material-symbols-outlined">sync_saved_locally</span> 跨裝置進度同步</h2>
                 <p class="subtitle" style="font-size:0.85rem; margin-bottom:12px;">將錯題紀錄與進度轉換為代碼，在另一台裝置貼上即可無縫接軌。</p>
-                <div style="display:flex; gap:8px;">
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
                     <button id="export-sync-btn" class="filter-btn">📤 產生同步代碼</button>
                     <button id="import-sync-btn" class="filter-btn">📥 輸入同步代碼</button>
+                    <button id="clear-wrong-btn" class="filter-btn" style="color:var(--error); border-color:var(--error);">🗑 清除錯題</button>
                 </div>
                 <textarea id="sync-code-area" placeholder="請在此貼上代碼..." style="display:none; width:100%; height:100px; margin-top:12px; padding:12px; border-radius:8px; background:var(--surface-low); color:var(--on-surface); border:1px solid var(--outline); font-family:monospace; font-size:0.8rem; word-break:break-all; resize:vertical;"></textarea>
                 <button id="confirm-import-btn" class="primary-btn" style="display:none; margin-top:8px; padding:10px; font-size:0.95rem;">確認匯入進度</button>
                 <div id="sync-status" style="margin-top:10px; font-size:0.9rem; font-weight:600;"></div>
             </div>
 
+            <!-- 六大分類直接開考 -->
             <div class="detailed-stats-card">
-                <div class="detailed-stat-item">
-                    <div class="stat-info">
-                        <span class="stat-title">📚 歷屆考古題</span>
-                        <span class="stat-progress-text" id="past-progress-text">0 / 0 / 725</span>
+                <div class="section-label">📚 歷屆考古題 <span style="font-weight:400; opacity:0.6;">— 點擊開始練習</span></div>
+                <div class="stat-row-split">
+                    <div class="split-item clickable" onclick="startSpecialMode('past', 1)">
+                        <span class="split-label">考科一</span>
+                        <span class="split-value" id="past-s1-text">0/0/351</span>
+                        <div class="progress-bar-mini"><div id="past-s1-bar" style="width:0%"></div></div>
                     </div>
-                    <div class="progress-bar-mini"><div id="past-progress-bar" style="width: 0%"></div></div>
-                    <div class="stat-detail">錯題數：<span id="past-wrong-count">0</span></div>
+                    <div class="split-item clickable" onclick="startSpecialMode('past', 2)">
+                        <span class="split-label">考科二</span>
+                        <span class="split-value" id="past-s2-text">0/0/325</span>
+                        <div class="progress-bar-mini"><div id="past-s2-bar" style="width:0%"></div></div>
+                    </div>
                 </div>
 
-                <div class="detailed-stat-item">
-                    <div class="stat-info">
-                        <span class="stat-title">🤖 AI 模擬題</span>
-                        <span class="stat-progress-text" id="ai-progress-text">0 / 0 / 0</span>
+                <div class="section-label" style="margin-top:12px;">🤖 AI 模擬題 <span style="font-weight:400; opacity:0.6;">— 點擊開始練習</span></div>
+                <div class="stat-row-split">
+                    <div class="split-item clickable" onclick="startSpecialMode('ai', 1)">
+                        <span class="split-label">考科一</span>
+                        <span class="split-value" id="ai-s1-text">0/0/402</span>
+                        <div class="progress-bar-mini"><div id="ai-s1-bar" style="width:0%"></div></div>
                     </div>
-                    <div class="progress-bar-mini"><div id="ai-progress-bar" style="width: 0%"></div></div>
-                    <div class="stat-detail">錯題數：<span id="ai-wrong-count">0</span></div>
+                    <div class="split-item clickable" onclick="startSpecialMode('ai', 2)">
+                        <span class="split-label">考科二</span>
+                        <span class="split-value" id="ai-s2-text">0/0/340</span>
+                        <div class="progress-bar-mini"><div id="ai-s2-bar" style="width:0%"></div></div>
+                    </div>
                 </div>
 
-                <div class="detailed-stat-item">
-                    <div class="stat-info">
-                        <span class="stat-title">🔥 高頻考題專區</span>
-                        <span class="stat-progress-text" id="hf-progress-text">0 / 0 / 206</span>
+                <div class="section-label" style="margin-top:12px;">🔥 高頻考題 <span style="font-weight:400; opacity:0.6;">— 點擊開始練習</span></div>
+                <div class="stat-row-split">
+                    <div class="split-item clickable" onclick="startSpecialMode('hf', 1)">
+                        <span class="split-label">考科一</span>
+                        <span class="split-value" id="hf-s1-text">0/0/93</span>
+                        <div class="progress-bar-mini"><div id="hf-s1-bar" style="width:0%"></div></div>
                     </div>
-                    <div class="progress-bar-mini"><div id="hf-progress-bar" style="width: 0%"></div></div>
-                    <div class="stat-detail">錯題數：<span id="hf-wrong-count">0</span></div>
+                    <div class="split-item clickable" onclick="startSpecialMode('hf', 2)">
+                        <span class="split-label">考科二</span>
+                        <span class="split-value" id="hf-s2-text">0/0/61</span>
+                        <div class="progress-bar-mini"><div id="hf-s2-bar" style="width:0%"></div></div>
+                    </div>
                 </div>
             </div>
+
         </div>
 
         <!-- ===== EXAM VIEW ===== -->
@@ -154,7 +125,6 @@
                 <section class="question-card">
                     <div class="question-tag" id="question-tag">歷屆考古題</div>
                     <h2 id="question-text" class="question-text">題目載入中...</h2>
-
                     <div class="options-list" id="options-container"></div>
                 </section>
 
@@ -220,27 +190,23 @@
             </div>
 
             <div class="history-controls" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
-                <button id="clear-history-btn" class="filter-btn"
-                    style="color: var(--error); border-color: var(--error);">
+                <button id="clear-history-btn" class="filter-btn" style="color: var(--error); border-color: var(--error);">
                     <span class="material-symbols-outlined" style="font-size: 1rem; margin-right: 4px;">delete</span>
                     刪除所有紀錄
                 </button>
                 <button id="history-back-btn" class="filter-btn">
-                    <span class="material-symbols-outlined"
-                        style="font-size: 1rem; margin-right: 4px;">arrow_back</span>
+                    <span class="material-symbols-outlined" style="font-size: 1rem; margin-right: 4px;">arrow_back</span>
                     返回首頁
                 </button>
             </div>
 
-            <div id="history-list-container">
-                <!-- History items will be inserted here -->
-            </div>
+            <div id="history-list-container"></div>
         </div>
 
     </div>
 
-    <script src="questions.js?v=2"></script>
-    <script src="app.js?v=2"></script>
+    <script src="questions.js?v=3"></script>
+    <script src="app.js?v=3"></script>
 </body>
 
 </html>

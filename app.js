@@ -37,51 +37,81 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ===== DOM Elements =====
 const $ = id => document.getElementById(id);
-const dashboardView = $('dashboard');
-const examView = $('exam-view');
-const resultView = $('result-view');
-const historyView = $('history-view');
-const ratioSlider = $('ratio-slider');
-const startBtn = $('start-btn');
-const historyBtn = $('history-btn');
+// 延遲到執行時才抓，避免 DOM 還沒準備好
+const getDashboard = () => document.getElementById('dashboard');
+const getExamView = () => document.getElementById('exam-view');
+const getResultView = () => document.getElementById('result-view');
+const getHistoryView = () => document.getElementById('history-view');
+// 保持 let 以便 switchView 動態取得
+let dashboardView, examView, resultView, historyView;
+document.addEventListener('DOMContentLoaded', () => {
+  dashboardView = getDashboard();
+  examView = getExamView();
+  resultView = getResultView();
+  historyView = getHistoryView();
+});
+const startBtn = null; // 舊按鈕已移除
+const historyBtn = null;
 const statsBackBtn = null;
 let progressChartInstance = null;
 
 // ===== Initialize Stats =====
 function initStats() {
-    const pastAll = [...pastQuestionsS1, ...pastQuestionsS2];
-    const aiAll = [...aiQuestionsS1, ...aiQuestionsS2];
-    const hfAll = [...hfQuestionsS1, ...hfQuestionsS2];
-    
     const questionStats = JSON.parse(localStorage.getItem('questionStats') || '{}');
     const wrongQ = JSON.parse(localStorage.getItem('wrongQuestions') || '{}');
     
-    function updateItem(questions, textId, barId, wrongId) {
+    // 每次測驗題數拉霸
+    const countSlider = $('count-slider');
+    const countValue = $('count-value');
+    if (countSlider && countValue) {
+        countSlider.addEventListener('input', () => {
+            countValue.textContent = countSlider.value;
+        });
+    }
+
+    function updateProgress(questions, textId, barId) {
+        const textEl = $(textId);
+        const barEl = $(barId);
+        if (!textEl || !barEl) return;
+
         const total = questions.length;
-        if (total === 0) return;
+        if (total === 0) {
+            textEl.textContent = "0/0/0";
+            barEl.style.width = "0%";
+            return;
+        }
         
         let done = 0;
         let wrong = 0;
+        const questionStats = JSON.parse(localStorage.getItem('questionStats') || '{}');
+        const wrongQ = JSON.parse(localStorage.getItem('wrongQuestions') || '{}');
+
         questions.forEach(q => {
             if (questionStats[q.id]) done++;
             if (wrongQ[q.id]) {
                 wrong++;
-                // 如果在錯題庫裡，不管有沒有統計次數，都算做過
                 if (!questionStats[q.id]) done++;
             }
         });
         
         const percent = Math.round((done / total) * 100);
-        $(textId).textContent = `${done} / ${wrong} / ${total}`;
-        $(barId).style.width = `${percent}%`;
-        $(wrongId).textContent = wrong;
+        textEl.textContent = `${done}/${wrong}/${total}`;
+        barEl.style.width = `${percent}%`;
     }
     
-    updateItem(pastAll, 'past-progress-text', 'past-progress-bar', 'past-wrong-count');
-    updateItem(aiAll, 'ai-progress-text', 'ai-progress-bar', 'ai-wrong-count');
-    updateItem(hfAll, 'hf-progress-text', 'hf-progress-bar', 'hf-wrong-count');
+    // 考古題
+    updateProgress(pastQuestionsS1, 'past-s1-text', 'past-s1-bar');
+    updateProgress(pastQuestionsS2, 'past-s2-text', 'past-s2-bar');
+    
+    // AI 題
+    updateProgress(aiQuestionsS1, 'ai-s1-text', 'ai-s1-bar');
+    updateProgress(aiQuestionsS2, 'ai-s2-text', 'ai-s2-bar');
+    
+    // 高頻題
+    updateProgress(hfQuestionsS1, 'hf-s1-text', 'hf-s1-bar');
+    updateProgress(hfQuestionsS2, 'hf-s2-text', 'hf-s2-bar');
 }
-initStats();
+
 
 // ===== Dashboard: Radio Selection =====
 document.querySelectorAll('.radio-option').forEach(opt => {
@@ -99,38 +129,28 @@ document.querySelectorAll('.radio-option').forEach(opt => {
   });
 });
 
-// ===== Dashboard: Slider =====
-ratioSlider.addEventListener('input', e => {
-  const pastCount = parseInt(e.target.value);
-  $('ratio-past-val').textContent = pastCount;
-  $('ratio-ai-val').textContent = 50 - pastCount;
-});
+// ===== Dashboard: Count Slider =====
+const countSliderEl = document.getElementById('count-slider');
+const countValueEl = document.getElementById('count-value');
+if (countSliderEl && countValueEl) {
+  countSliderEl.addEventListener('input', () => {
+    countValueEl.textContent = countSliderEl.value;
+  });
+}
 
-// ===== Start Exam =====
-startBtn.addEventListener('click', () => {
-  const pastCount = parseInt(ratioSlider.value);
-  const aiCount = 50 - pastCount;
-
-  currentQuestions = getQuestionPool(selectedSubject, pastCount, aiCount);
-  userAnswers = new Array(currentQuestions.length).fill(null);
-  flaggedQuestions.clear();
-  currentQuestionIndex = 0;
-
-  initExamUI();
-  switchView(examView);
-});
-
-$('wrong-practice-btn').addEventListener('click', () => {
+// ===== Dashboard: Wrong Practice =====
+document.getElementById('wrong-practice-btn')?.addEventListener('click', () => {
   let wrongQ = JSON.parse(localStorage.getItem('wrongQuestions') || '{}');
   const wrongIds = Object.keys(wrongQ);
   if (wrongIds.length === 0) {
-      alert("🎉 太棒了！你目前沒有任何錯題紀錄。");
+      alert('太棒了！你目前沒有任何錯題紀錄。');
       return;
   }
   
   currentQuestions = wrongIds.map(getQuestionById).filter(Boolean);
-  currentQuestions.sort(() => Math.random() - 0.5); // Shuffle
-  if (currentQuestions.length > 50) currentQuestions = currentQuestions.slice(0, 50);
+  currentQuestions.sort(() => Math.random() - 0.5);
+  const maxQ = parseInt(document.getElementById('count-slider')?.value || 50);
+  if (currentQuestions.length > maxQ) currentQuestions = currentQuestions.slice(0, maxQ);
 
   userAnswers = new Array(currentQuestions.length).fill(null);
   flaggedQuestions.clear();
@@ -138,7 +158,7 @@ $('wrong-practice-btn').addEventListener('click', () => {
   selectedSubject = 'wrong_practice';
 
   initExamUI();
-  switchView(examView);
+  switchView(document.getElementById('exam-view'));
 });
 
 $('clear-wrong-btn')?.addEventListener('click', () => {
@@ -153,15 +173,105 @@ $('clear-wrong-btn')?.addEventListener('click', () => {
     }
 });
 
+document.getElementById('history-btn')?.addEventListener('click', () => {
+    renderHistory();
+    switchView(document.getElementById('history-view'));
+});
+
+// ===== Start Test (Direct Modes) =====
+window.startSpecialMode = function(type, subject) {
+    let pool = [];
+    if (type === 'past') {
+        pool = (subject === 1) ? pastQuestionsS1 : pastQuestionsS2;
+    } else if (type === 'ai') {
+        pool = (subject === 1) ? aiQuestionsS1 : aiQuestionsS2;
+    } else if (type === 'hf') {
+        pool = (subject === 1) ? hfQuestionsS1 : hfQuestionsS2;
+    }
+    
+    if (!pool || pool.length === 0) {
+        alert('該題庫目前沒有題目。');
+        return;
+    }
+    
+    // ANKI 權重演算法
+    const questionStats = JSON.parse(localStorage.getItem('questionStats') || '{}');
+    const wrongQ = JSON.parse(localStorage.getItem('wrongQuestions') || '{}');
+    const bookmarked = JSON.parse(localStorage.getItem('bookmarkedQuestions') || '[]');
+    
+    let weightedPool = [];
+    pool.forEach(q => {
+        let weight = 1;
+        if (wrongQ[q.id]) weight += 10;
+        if (bookmarked.includes(q.id)) weight += 5;
+        if (!questionStats[q.id]) weight += 3;
+        for (let i = 0; i < weight; i++) weightedPool.push(q);
+    });
+    
+    // 取得設定的題數
+    const countSlider = document.getElementById('count-slider');
+    const maxQuestions = countSlider ? parseInt(countSlider.value) : 20;
+    
+    // 隨機抽題 (直到達到設定題數)
+    currentQuestions = [];
+    const tempPool = [...weightedPool];
+    for (let i = 0; i < maxQuestions && tempPool.length > 0; i++) {
+        const idx = Math.floor(Math.random() * tempPool.length);
+        const q = tempPool.splice(idx, 1)[0];
+        if (!currentQuestions.find(x => x.id === q.id)) {
+            currentQuestions.push(q);
+        } else {
+            i--;
+        }
+    }
+    
+    if (currentQuestions.length < maxQuestions && pool.length > currentQuestions.length) {
+        const remaining = pool.filter(x => !currentQuestions.find(y => y.id === x.id));
+        shuffleArray(remaining);
+        while (currentQuestions.length < maxQuestions && remaining.length > 0) {
+            currentQuestions.push(remaining.pop());
+        }
+    }
+    
+    // 設定當前測驗模式（這會影響到結果頁面的統計）
+    selectedSubject = type === 'hf' ? 'high_freq' : subject;
+    
+    startExam();
+};
+
+function startExam() {
+  if (!currentQuestions || currentQuestions.length === 0) {
+    alert("題目載入失敗，請重新整理網頁。");
+    return;
+  }
+  userAnswers = new Array(currentQuestions.length).fill(null);
+  flaggedQuestions.clear();
+  currentQuestionIndex = 0;
+  
+  initExamUI();
+  renderQuestion(0);
+  // 動態取得 examView，不依賴可能是 null 的頂層變數
+  switchView(document.getElementById('exam-view'));
+}
+
 function switchView(target) {
-  [dashboardView, examView, resultView, historyView, statsView].forEach(v => {
+  // 每次動態重新抓，避免 null 參考問題
+  const views = [
+    document.getElementById('dashboard'),
+    document.getElementById('exam-view'),
+    document.getElementById('result-view'),
+    document.getElementById('history-view')
+  ];
+  views.forEach(v => {
     if (v) {
       v.classList.remove('view-active');
       v.classList.add('view-hidden');
     }
   });
-  target.classList.remove('view-hidden');
-  target.classList.add('view-active');
+  if (target) {
+    target.classList.remove('view-hidden');
+    target.classList.add('view-active');
+  }
   window.scrollTo(0, 0);
 }
 
@@ -190,13 +300,17 @@ function renderQuestion(index) {
 
   // Tag
   const tag = $('question-tag');
-  if (q.type === 'ai') {
-    tag.textContent = '🤖 AI 時事改編';
-    tag.className = 'question-tag ai-tag';
-  } else {
-    tag.textContent = '📚 歷屆考古題';
-    tag.className = 'question-tag';
-  }
+  let categoryStr = '';
+  if (q.id.startsWith('P-S1')) categoryStr = '📚 考古 S1';
+  else if (q.id.startsWith('P-S2')) categoryStr = '📚 考古 S2';
+  else if (q.id.startsWith('AI-S1')) categoryStr = '🤖 AI S1';
+  else if (q.id.startsWith('AI-S2')) categoryStr = '🤖 AI S2';
+  else if (q.id.startsWith('HF-S1')) categoryStr = '🔥 高頻 S1';
+  else if (q.id.startsWith('HF-S2')) categoryStr = '🔥 高頻 S2';
+  else categoryStr = q.type === 'ai' ? '🤖 AI 題' : '📚 考古題';
+
+  tag.textContent = categoryStr;
+  tag.className = 'question-tag ' + (q.id.includes('AI') ? 'ai-tag' : (q.id.includes('HF') ? 'hf-tag' : ''));
 
   // Question text
   $('question-text').textContent = q.question;
@@ -466,6 +580,7 @@ function showResult() {
     localStorage.setItem('lastSyncTime', Date.now().toString());
 
     saveHistory(score, correctCount);
+    initStats(); // 更新儀表板進度條
   }
 
   renderReview('all');
@@ -480,7 +595,13 @@ function saveHistory(score, correctCount) {
     score: score,
     correctCount: correctCount,
     totalCount: currentQuestions.length,
-    subject: selectedSubject === 'subject1' ? '考科 1' : selectedSubject === 'subject2' ? '考科 2' : selectedSubject === 'wrong_practice' ? '錯題專區' : '綜合測驗',
+    subject: (function() {
+        if (selectedSubject === 'wrong_practice') return '錯題專區';
+        if (selectedSubject === 'high_freq') return '高頻考題';
+        if (selectedSubject === 1) return '考科 1';
+        if (selectedSubject === 2) return '考科 2';
+        return '綜合測驗';
+    })(),
     questionIds: currentQuestions.map(q => q.id),
     userAnswers: [...userAnswers],
     flagged: Array.from(flaggedQuestions)
@@ -507,11 +628,11 @@ $('history-back-btn')?.addEventListener('click', () => switchView(dashboardView)
 $('clear-history-btn')?.addEventListener('click', () => {
   if (confirm('確定要刪除所有測驗紀錄嗎？此動作無法復原。')) {
     localStorage.removeItem('examHistory');
-    renderHistoryList();
+    renderHistory();
   }
 });
 
-function renderHistoryList() {
+function renderHistory() {
   const container = $('history-list-container');
   container.innerHTML = '';
   const history = JSON.parse(localStorage.getItem('examHistory') || '[]');
@@ -682,6 +803,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 
 // Back to dashboard
 $('back-dashboard-btn').addEventListener('click', () => {
+  initStats(); // 返回前再次確保進度更新
   if (isViewingHistory) {
     switchView(historyView);
   } else {
@@ -804,11 +926,7 @@ if (exportBtn) {
     });
 }
 
-// ===== Stats System =====
-if (statsBtn) {
-    statsBtn.addEventListener('click', () => {
-        renderStats();
-        switchView(statsView);
-    });
-}
-
+// Dashboard initial check
+document.addEventListener('DOMContentLoaded', () => {
+    initStats();
+});
