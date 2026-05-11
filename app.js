@@ -10,7 +10,7 @@ let lastRenderedIndex = -1;
 let customAnswers = JSON.parse(localStorage.getItem('customAnswers') || '{}');
 
 // Apply custom answers globally on load
-[...pastQuestionsS1, ...pastQuestionsS2, ...aiQuestionsS1, ...aiQuestionsS2].forEach(q => {
+[...pastQuestionsS1, ...pastQuestionsS2, ...aiQuestionsS1, ...aiQuestionsS2, ...hfQuestionsS1, ...hfQuestionsS2].forEach(q => {
     if (customAnswers.hasOwnProperty(q.id)) {
         q.correctIndex = customAnswers[q.id];
         q.verified = true;
@@ -18,19 +18,20 @@ let customAnswers = JSON.parse(localStorage.getItem('customAnswers') || '{}');
 });
 
 function getQuestionById(id) {
-  return [...pastQuestionsS1, ...pastQuestionsS2, ...aiQuestionsS1, ...aiQuestionsS2].find(q => q.id === id);
+  return [...pastQuestionsS1, ...pastQuestionsS2, ...aiQuestionsS1, ...aiQuestionsS2, ...hfQuestionsS1, ...hfQuestionsS2].find(q => q.id === id);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     const aiCount = aiQuestionsS1.length + aiQuestionsS2.length;
     const pastCount = pastQuestionsS1.length + pastQuestionsS2.length;
+    const hfCount = hfQuestionsS1.length + hfQuestionsS2.length;
     
     const statTotal = document.getElementById('stat-total');
     const statAi = document.getElementById('stat-ai');
     const statPast = document.getElementById('stat-past');
     
-    if (statTotal) statTotal.textContent = aiCount + pastCount;
-    if (statAi) statAi.textContent = aiCount;
+    if (statTotal) statTotal.textContent = aiCount + pastCount + hfCount;
+    if (statAi) statAi.textContent = aiCount + hfCount;
     if (statPast) statPast.textContent = pastCount;
 });
 
@@ -52,9 +53,10 @@ let progressChartInstance = null;
 function initStats() {
   const pastCount = pastQuestionsS1.length + pastQuestionsS2.length;
   const aiCount = aiQuestionsS1.length + aiQuestionsS2.length;
-  $('stat-total').textContent = (pastCount + aiCount).toLocaleString();
+  const hfCount = hfQuestionsS1.length + hfQuestionsS2.length;
+  $('stat-total').textContent = (pastCount + aiCount + hfCount).toLocaleString();
   $('stat-past').textContent = pastCount.toLocaleString();
-  $('stat-ai').textContent = aiCount.toLocaleString();
+  $('stat-ai').textContent = (aiCount + hfCount).toLocaleString();
 }
 initStats();
 
@@ -792,7 +794,7 @@ if (statsBackBtn) {
 }
 
 function renderStats() {
-    const allQuestions = [...pastQuestionsS1, ...pastQuestionsS2, ...aiQuestionsS1, ...aiQuestionsS2];
+    const allQuestions = [...pastQuestionsS1, ...pastQuestionsS2, ...aiQuestionsS1, ...aiQuestionsS2, ...hfQuestionsS1, ...hfQuestionsS2];
     const totalCount = allQuestions.length;
     
     let questionStats = JSON.parse(localStorage.getItem('questionStats') || '{}');
