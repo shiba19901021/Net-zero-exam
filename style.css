@@ -135,7 +135,60 @@ body {
 .radio-option.active .radio-dot {
   border-color: var(--secondary);
   background: var(--secondary);
-  box-shadow: inset 0 0 0 3px var(--secondary-container);
+  box-shadow: 0 3px var(--secondary-container);
+}
+
+/* Detailed Stats Card */
+.detailed-stats-card {
+    background: var(--surface-low);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+    border: 1px solid var(--outline-variant);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.detailed-stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.stat-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.stat-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--on-surface);
+}
+.stat-progress-text {
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--primary);
+}
+.progress-bar-mini {
+    height: 8px;
+    background: var(--surface-variant);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.progress-bar-mini div {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+.stat-detail {
+    font-size: 0.8rem;
+    color: var(--on-surface-variant);
+}
+.stat-detail span {
+    color: var(--error);
+    font-weight: 700;
 }
 
 .slider-wrapper { padding: 0 4px; }

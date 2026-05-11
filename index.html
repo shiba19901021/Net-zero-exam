@@ -89,11 +89,6 @@
                     <span class="material-symbols-outlined">history</span>
                     測驗歷史紀錄
                 </button>
-                <button id="stats-btn" class="secondary-btn"
-                    style="margin-top: 1rem; width: 100%; padding: 12px; border-radius: 12px; background: var(--surface-low); color: var(--on-surface); border: 1px solid var(--outline-variant); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600;">
-                    <span class="material-symbols-outlined">bar_chart</span>
-                    學習進度統計
-                </button>
             </div>
 
             <div class="card" style="margin-bottom: 1.5rem;">
@@ -108,18 +103,32 @@
                 <div id="sync-status" style="margin-top:10px; font-size:0.9rem; font-weight:600;"></div>
             </div>
 
-            <div class="stats-row">
-                <div class="stat-card">
-                    <span class="stat-number" id="stat-total">--</span>
-                    <span class="stat-label">題庫總量</span>
+            <div class="detailed-stats-card">
+                <div class="detailed-stat-item">
+                    <div class="stat-info">
+                        <span class="stat-title">📚 歷屆考古題</span>
+                        <span class="stat-progress-text" id="past-progress-text">0 / 0 / 725</span>
+                    </div>
+                    <div class="progress-bar-mini"><div id="past-progress-bar" style="width: 0%"></div></div>
+                    <div class="stat-detail">錯題數：<span id="past-wrong-count">0</span></div>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-number" id="stat-past">--</span>
-                    <span class="stat-label">考古題</span>
+
+                <div class="detailed-stat-item">
+                    <div class="stat-info">
+                        <span class="stat-title">🤖 AI 模擬題</span>
+                        <span class="stat-progress-text" id="ai-progress-text">0 / 0 / 0</span>
+                    </div>
+                    <div class="progress-bar-mini"><div id="ai-progress-bar" style="width: 0%"></div></div>
+                    <div class="stat-detail">錯題數：<span id="ai-wrong-count">0</span></div>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-number" id="stat-ai">--</span>
-                    <span class="stat-label">AI 模擬/高頻</span>
+
+                <div class="detailed-stat-item">
+                    <div class="stat-info">
+                        <span class="stat-title">🔥 高頻考題專區</span>
+                        <span class="stat-progress-text" id="hf-progress-text">0 / 0 / 206</span>
+                    </div>
+                    <div class="progress-bar-mini"><div id="hf-progress-bar" style="width: 0%"></div></div>
+                    <div class="stat-detail">錯題數：<span id="hf-wrong-count">0</span></div>
                 </div>
             </div>
         </div>
@@ -228,40 +237,8 @@
             </div>
         </div>
 
-        <!-- ===== STATS VIEW ===== -->
-        <div id="stats-view" class="view-hidden">
-            <div class="result-header">
-                <h1>學習進度統計</h1>
-                <p class="subtitle">檢視你的刷題進度與狀態</p>
-            </div>
-
-            <div class="card" style="margin-bottom: 1rem;">
-                <canvas id="progressChart"></canvas>
-            </div>
-
-            <div class="stats-row" style="margin-bottom: 1rem;">
-                <div class="stat-card">
-                    <span class="stat-number" id="stats-done">0</span>
-                    <span class="stat-label">總共做過</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number" id="stats-undone" style="color:var(--on-surface-variant);">0</span>
-                    <span class="stat-label">尚未做過</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number" id="stats-multiple" style="color:var(--primary);">0</span>
-                    <span class="stat-label">做過多次</span>
-                </div>
-            </div>
-
-            <button id="stats-back-btn" class="primary-btn" style="width: 100%;">
-                <span class="material-symbols-outlined">arrow_back</span>
-                返回首頁
-            </button>
-        </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="questions.js?v=2"></script>
     <script src="app.js?v=2"></script>
 </body>

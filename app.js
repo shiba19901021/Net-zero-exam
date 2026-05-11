@@ -44,19 +44,42 @@ const historyView = $('history-view');
 const ratioSlider = $('ratio-slider');
 const startBtn = $('start-btn');
 const historyBtn = $('history-btn');
-const statsBtn = $('stats-btn');
-const statsView = $('stats-view');
-const statsBackBtn = $('stats-back-btn');
+const statsBackBtn = null;
 let progressChartInstance = null;
 
 // ===== Initialize Stats =====
 function initStats() {
-  const pastCount = pastQuestionsS1.length + pastQuestionsS2.length;
-  const aiCount = aiQuestionsS1.length + aiQuestionsS2.length;
-  const hfCount = hfQuestionsS1.length + hfQuestionsS2.length;
-  $('stat-total').textContent = (pastCount + aiCount + hfCount).toLocaleString();
-  $('stat-past').textContent = pastCount.toLocaleString();
-  $('stat-ai').textContent = (aiCount + hfCount).toLocaleString();
+    const pastAll = [...pastQuestionsS1, ...pastQuestionsS2];
+    const aiAll = [...aiQuestionsS1, ...aiQuestionsS2];
+    const hfAll = [...hfQuestionsS1, ...hfQuestionsS2];
+    
+    const questionStats = JSON.parse(localStorage.getItem('questionStats') || '{}');
+    const wrongQ = JSON.parse(localStorage.getItem('wrongQuestions') || '{}');
+    
+    function updateItem(questions, textId, barId, wrongId) {
+        const total = questions.length;
+        if (total === 0) return;
+        
+        let done = 0;
+        let wrong = 0;
+        questions.forEach(q => {
+            if (questionStats[q.id]) done++;
+            if (wrongQ[q.id]) {
+                wrong++;
+                // 如果在錯題庫裡，不管有沒有統計次數，都算做過
+                if (!questionStats[q.id]) done++;
+            }
+        });
+        
+        const percent = Math.round((done / total) * 100);
+        $(textId).textContent = `${done} / ${wrong} / ${total}`;
+        $(barId).style.width = `${percent}%`;
+        $(wrongId).textContent = wrong;
+    }
+    
+    updateItem(pastAll, 'past-progress-text', 'past-progress-bar', 'past-wrong-count');
+    updateItem(aiAll, 'ai-progress-text', 'ai-progress-bar', 'ai-wrong-count');
+    updateItem(hfAll, 'hf-progress-text', 'hf-progress-bar', 'hf-wrong-count');
 }
 initStats();
 
@@ -789,71 +812,3 @@ if (statsBtn) {
     });
 }
 
-if (statsBackBtn) {
-    statsBackBtn.addEventListener('click', () => switchView(dashboardView));
-}
-
-function renderStats() {
-    const allQuestions = [...pastQuestionsS1, ...pastQuestionsS2, ...aiQuestionsS1, ...aiQuestionsS2, ...hfQuestionsS1, ...hfQuestionsS2];
-    const totalCount = allQuestions.length;
-    
-    let questionStats = JSON.parse(localStorage.getItem('questionStats') || '{}');
-    let wrongStats = JSON.parse(localStorage.getItem('wrongStats') || '{}');
-    let wrongQ = JSON.parse(localStorage.getItem('wrongQuestions') || '{}');
-    
-    let doneCount = 0;
-    let multipleCount = 0;
-    
-    allQuestions.forEach(q => {
-        let timesDone = (questionStats[q.id] || 0) + (wrongStats[q.id] || 0);
-        // 如果在錯題庫且次數是0，也算做過一次
-        if (timesDone === 0 && wrongQ.hasOwnProperty(q.id)) {
-            timesDone = 1; 
-        }
-        
-        if (timesDone > 0) doneCount++;
-        if (timesDone > 1) multipleCount++;
-    });
-    
-    const undoneCount = totalCount - doneCount;
-    
-    $('stats-done').textContent = doneCount;
-    $('stats-undone').textContent = undoneCount;
-    $('stats-multiple').textContent = multipleCount;
-    
-    const ctx = document.getElementById('progressChart').getContext('2d');
-    
-    if (progressChartInstance) {
-        progressChartInstance.destroy();
-    }
-    
-    progressChartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['已做過 (僅 1 次)', '做過多次', '尚未做過'],
-            datasets: [{
-                data: [doneCount - multipleCount, multipleCount, undoneCount],
-                backgroundColor: [
-                    '#4caf50', 
-                    '#2196f3', 
-                    '#e0e0e0'  
-                ],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            cutout: '70%',
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        font: {
-                            family: "'Manrope', sans-serif"
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
