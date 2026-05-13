@@ -492,16 +492,6 @@ $('next-btn').addEventListener('click', () => {
   if (currentQuestionIndex < currentQuestions.length - 1) renderQuestion(currentQuestionIndex + 1);
 });
 
-// Side nav areas
-$('side-prev-btn')?.addEventListener('click', (e) => {
-    if (currentQuestionIndex > 0) renderQuestion(currentQuestionIndex - 1);
-    // Optional: prevent potential double-tap zooms or other side effects
-    e.preventDefault();
-});
-$('side-next-btn')?.addEventListener('click', (e) => {
-    if (currentQuestionIndex < currentQuestions.length - 1) renderQuestion(currentQuestionIndex + 1);
-    e.preventDefault();
-});
 
 // Flag
 $('flag-btn').addEventListener('click', () => {

@@ -149,13 +149,6 @@
                 </button>
             </nav>
 
-            <!-- 側邊快速導航區域 -->
-            <div class="side-nav-area side-nav-left" id="side-prev-btn">
-                <span class="material-symbols-outlined">chevron_left</span>
-            </div>
-            <div class="side-nav-area side-nav-right" id="side-next-btn">
-                <span class="material-symbols-outlined">chevron_right</span>
-            </div>
 
             <div class="question-map" id="question-dots"></div>
         </div>
@@ -164,6 +157,10 @@
         <div id="result-view" class="view-hidden">
             <div class="result-header">
                 <h1>測驗結果</h1>
+                <button id="back-dashboard-btn" class="primary-btn" style="margin-top: 1rem;">
+                    <span class="material-symbols-outlined">home</span>
+                    回首頁
+                </button>
                 <div class="score-display">
                     <div class="score-circle">
                         <span class="score-number" id="final-score">--</span>
@@ -183,11 +180,6 @@
             </div>
 
             <div id="review-container"></div>
-
-            <button id="back-dashboard-btn" class="primary-btn" style="margin-top:1.5rem;">
-                <span class="material-symbols-outlined">home</span>
-                回首頁
-            </button>
         </div>
 
         <!-- ===== HISTORY VIEW ===== -->
