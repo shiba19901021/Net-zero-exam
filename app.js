@@ -18,7 +18,13 @@ let customAnswers = JSON.parse(localStorage.getItem('customAnswers') || '{}');
 });
 
 function getQuestionById(id) {
-  return [...pastQuestionsS1, ...pastQuestionsS2, ...aiQuestionsS1, ...aiQuestionsS2, ...hfQuestionsS1, ...hfQuestionsS2].find(q => q.id === id);
+  return [
+    ...pastQuestionsS1, ...pastQuestionsS2,
+    ...aiQuestionsS1, ...aiQuestionsS2,
+    ...hfQuestionsS1, ...hfQuestionsS2,
+    ...(typeof eliteQuestionsS1 !== 'undefined' ? eliteQuestionsS1 : []),
+    ...(typeof eliteQuestionsS2 !== 'undefined' ? eliteQuestionsS2 : [])
+  ].find(q => q.id === id);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -237,6 +243,37 @@ window.startSpecialMode = function(type, subject) {
     selectedSubject = type === 'hf' ? 'high_freq' : subject;
     
     startExam();
+};
+
+// ===== 精華模擬考 =====
+window.startMockExam = function(subjectNum) {
+    const pool = subjectNum === 1
+        ? (typeof eliteQuestionsS1 !== 'undefined' ? eliteQuestionsS1 : [])
+        : (typeof eliteQuestionsS2 !== 'undefined' ? eliteQuestionsS2 : []);
+
+    if (!pool || pool.length === 0) {
+        alert('精華題庫載入失敗，請重新整理頁面。');
+        return;
+    }
+
+    // 隨機洗牌後取 50 題
+    const shuffled = [...pool].sort(() => Math.random() - 0.5);
+    currentQuestions = shuffled.slice(0, 50);
+    selectedSubject = `elite_s${subjectNum}`;
+    feedbackMode = 'instant'; // 精華模擬考永遠為即時對答
+
+    userAnswers = new Array(currentQuestions.length).fill(null);
+    flaggedQuestions.clear();
+    currentQuestionIndex = 0;
+
+    initExamUI();
+
+    // 設定驗題區標籤
+    const tag = document.getElementById('question-tag');
+    if (tag) tag.textContent = `⭐ 精華模擬考 – 考科${subjectNum === 1 ? '一' : '二'}`;
+
+    renderQuestion(0);
+    switchView(document.getElementById('exam-view'));
 };
 
 function startExam() {

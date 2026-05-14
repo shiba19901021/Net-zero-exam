@@ -650,3 +650,106 @@ input[type="range"]::-webkit-slider-thumb {
     font-size: 2.5rem;
   }
 }
+
+/* ===== 精華模擬考 Banner ===== */
+.mock-exam-banner {
+  margin-bottom: 1.2rem;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #3a2e00 0%, #5a4100 40%, #3a2e00 100%);
+  border: 1.5px solid #a07a00;
+  box-shadow: 0 4px 24px rgba(160, 122, 0, 0.25), 0 0 0 1px rgba(255, 200, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+  animation: mockBannerGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes mockBannerGlow {
+  from { box-shadow: 0 4px 24px rgba(160, 122, 0, 0.2), 0 0 0 1px rgba(255, 200, 0, 0.08); }
+  to   { box-shadow: 0 6px 32px rgba(200, 155, 0, 0.4), 0 0 0 1px rgba(255, 200, 0, 0.25); }
+}
+
+.mock-exam-inner {
+  padding: 18px 20px 20px;
+}
+
+.mock-exam-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffd84d;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.mock-star {
+  font-size: 1.1rem;
+}
+
+.mock-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  background: #ffd84d;
+  color: #3a2e00;
+  padding: 2px 7px;
+  border-radius: 100px;
+}
+
+.mock-exam-desc {
+  font-size: 0.83rem;
+  color: #c9a845;
+  margin: 0 0 14px;
+  opacity: 0.85;
+}
+
+.mock-subject-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.mock-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 14px 8px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(255, 216, 77, 0.35);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.mock-btn-s1 {
+  background: linear-gradient(135deg, rgba(255,216,77,0.15), rgba(255,180,0,0.08));
+  color: #ffd84d;
+}
+
+.mock-btn-s2 {
+  background: linear-gradient(135deg, rgba(255,180,120,0.15), rgba(255,140,60,0.08));
+  color: #ffb87a;
+  border-color: rgba(255, 160, 80, 0.35);
+}
+
+.mock-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+}
+
+.mock-btn:active {
+  transform: scale(0.97);
+}
+
+.mock-btn-label {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.mock-btn-sub {
+  font-size: 0.72rem;
+  opacity: 0.7;
+}

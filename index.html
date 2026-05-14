@@ -57,6 +57,28 @@
                 <div id="sync-status" style="margin-top:10px; font-size:0.9rem; font-weight:600;"></div>
             </div>
 
+            <!-- 精華模擬考 Banner -->
+            <div class="mock-exam-banner" id="mock-exam-banner">
+                <div class="mock-exam-inner">
+                    <div class="mock-exam-title">
+                        <span class="mock-star">⭐</span>
+                        精華模擬考
+                        <span class="mock-badge">NEW</span>
+                    </div>
+                    <p class="mock-exam-desc">從 150 題精華庫隨機抽 50 題 · 即時對答 · 錯題自動記錄</p>
+                    <div class="mock-subject-btns">
+                        <button id="mock-s1-btn" class="mock-btn mock-btn-s1" onclick="startMockExam(1)">
+                            <span class="mock-btn-label">考科一</span>
+                            <span class="mock-btn-sub">法規 / 國際 / ESG</span>
+                        </button>
+                        <button id="mock-s2-btn" class="mock-btn mock-btn-s2" onclick="startMockExam(2)">
+                            <span class="mock-btn-label">考科二</span>
+                            <span class="mock-btn-sub">盤查 / 碳足跡 / LCA</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- 六大分類直接開考 -->
             <div class="detailed-stats-card">
                 <div class="section-label">📚 歷屆考古題 <span style="font-weight:400; opacity:0.6;">— 點擊開始練習</span></div>
@@ -206,7 +228,8 @@
     </div>
 
     <script src="questions.js?v=3"></script>
-    <script src="app.js?v=3"></script>
+    <script src="elite_questions.js?v=1"></script>
+    <script src="app.js?v=4"></script>
 </body>
 
 </html>
